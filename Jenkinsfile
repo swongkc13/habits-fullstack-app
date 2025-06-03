@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3'      // Match the name in Global Tool Configuration
-        jdk 'Java_17'        // Match your installed JDK name
+        maven 'Maven 3'
+        jdk 'Java_17'
     }
 
     environment {
@@ -30,10 +30,13 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                dir("${FRONTEND_DIR}") {
-                    withNodejs('Node_20') {
-                        bat 'npm install'
-                        bat 'npm run build'
+                script {
+                    def nodeHome = tool name: 'Node_20', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    withEnv(["PATH=${nodeHome}/bin:${env.PATH}"]) {
+                        dir("${FRONTEND_DIR}") {
+                            bat 'npm install'
+                            bat 'npm run build'
+                        }
                     }
                 }
             }
