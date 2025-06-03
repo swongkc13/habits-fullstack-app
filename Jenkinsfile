@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven 3'      // Match the name in Global Tool Configuration
-        jdk 'Java 17'        // Match your installed JDK name
+        jdk 'Java_17'        // Match your installed JDK name
     }
 
     environment {
