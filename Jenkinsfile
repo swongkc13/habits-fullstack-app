@@ -2,22 +2,20 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven_3'
+        maven 'Maven 3'
         jdk 'Java_17'
         nodejs 'Node_20'
     }
 
-    stages {
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/your-username/your-mono-repo'
-            }
-        }
+    environment {
+        NODE_ENV = 'production'
+    }
 
+    stages {
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    bat 'mvn clean package' // use `sh` on Linux
+                    bat 'mvn clean install'
                 }
             }
         }
@@ -31,20 +29,32 @@ pipeline {
             }
         }
 
-        stage('Archive Backend JAR') {
+        stage('Test Backend') {
             steps {
                 dir('backend') {
-                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                    bat 'mvn test'
                 }
             }
         }
 
-        stage('Archive Frontend Build') {
+        stage('Archive Artifacts') {
             steps {
-                dir('frontend') {
-                    archiveArtifacts artifacts: 'dist/**', fingerprint: true
+                dir('backend') {
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                }
+                dir('frontend/dist') {
+                    archiveArtifacts artifacts: '**/*', fingerprint: true
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build and tests passed!'
+        }
+        failure {
+            echo '❌ Build failed.'
         }
     }
 }
