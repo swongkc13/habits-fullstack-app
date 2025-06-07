@@ -1,3 +1,4 @@
+
 package com.example.fullstackapp.model;
 
 import jakarta.persistence.Entity;
@@ -13,10 +14,8 @@ public class Habit {
     private Long id;
 
     private String name;
-
     private int count;
 
-    // Constructors
     public Habit() {}
 
     public Habit(String name) {
@@ -24,7 +23,6 @@ public class Habit {
         this.count = 0;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

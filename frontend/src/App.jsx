@@ -1,46 +1,43 @@
+
 import { useEffect, useState } from 'react';
+import { getHabits, addHabit, incrementHabit } from './HabitService';
 
 function App() {
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState("");
 
-  // Fetch all habits from the backend
   useEffect(() => {
-    fetch('/api/habits')
-      .then(res => res.json())
-      .then(data => setHabits(data))
-      .catch(err => console.error("Error loading habits", err));
+    getHabits().then(setHabits);
   }, []);
 
-  // Add a new habit
-  const addHabit = () => {
-    fetch('/api/habits', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newHabit })
-    })
-    .then(res => res.json())
-    .then(data => {
-      setHabits([...habits, data]);
-      setNewHabit('');
-    });
+  const handleAddHabit = async () => {
+    if (!newHabit.trim()) return;
+    await addHabit(newHabit);
+    setNewHabit("");
+    getHabits().then(setHabits);
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>FocusForge – Micro Habit Tracker</h1>
-
-      <input
-        value={newHabit}
-        onChange={(e) => setNewHabit(e.target.value)}
-        placeholder="Add a new habit"
-      />
-      <button onClick={addHabit}>Add Habit</button>
-
+    <div className="p-6 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Habit Tracker</h1>
+      <div className="flex mb-4">
+        <input
+          className="flex-grow border p-2 mr-2 rounded"
+          value={newHabit}
+          onChange={(e) => setNewHabit(e.target.value)}
+          placeholder="New Habit..."
+        />
+        <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleAddHabit}>
+          Add
+        </button>
+      </div>
       <ul>
-        {habits.map(habit => (
-          <li key={habit.id}>
-            {habit.name} – done {habit.count} times
+        {habits.map(h => (
+          <li key={h.id} className="mb-2 flex justify-between items-center">
+            <span>{h.name} – {h.count}</span>
+            <button className="bg-green-500 text-white px-2 py-1 rounded" onClick={() => incrementHabit(h.id).then(() => getHabits().then(setHabits))}>
+              +1
+            </button>
           </li>
         ))}
       </ul>
