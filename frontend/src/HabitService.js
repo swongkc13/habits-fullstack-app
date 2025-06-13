@@ -1,4 +1,3 @@
-
 export async function getHabits() {
   const response = await fetch('/api/habits');
   return response.json();
